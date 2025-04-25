@@ -86,25 +86,33 @@ VA disability and compensation calculator
 
     function calculateRating() {
       const inputs = document.querySelectorAll('#inputs input');
-      const ratings = Array.from(inputs).map(input => parseFloat(input.value)).filter(val => !isNaN(val));
-      ratings.sort((a, b) => b - a);
+      let ratings = Array.from(inputs)
+        .map(input => parseFloat(input.value))
+        .filter(val => !isNaN(val))
+        .sort((a, b) => b - a);
 
       if (ratings.length === 0) {
         document.getElementById('result').innerText = 'Please enter at least one valid rating.';
         return;
       }
 
-      let combined = ratings[0];
-      for (let i = 1; i < ratings.length; i++) {
-        combined = combined + (1 - combined / 100) * ratings[i];
-        combined = Math.round(combined * 10) / 10;
+      let combined = 0;
+      let remaining = 100;
+
+      for (let i = 0; i < ratings.length; i++) {
+        let additional = remaining * (ratings[i] / 100);
+        combined += additional;
+        remaining = 100 - combined;
       }
-      const final = Math.min(Math.round((combined + 5) / 10) * 10, 100);
+
+      let final = Math.round(combined / 10) * 10;
+      final = Math.min(final, 100);
+
       document.getElementById('result').innerText = `Combined VA Disability Rating: ${final}%`;
     }
 
-    // Initialize with one input
-    addInput();
+    // Initialize with 5 input fields
+    for (let i = 0; i < 5; i++) addInput();
   </script>
 </body>
 </html>
