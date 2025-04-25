@@ -1,16 +1,5 @@
 # VA-Calculator
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VA Disability Rating Calculator</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f2f2f2;
-      color: #1a1a1a;
       padding: 20px;
     }
     .container {
