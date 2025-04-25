@@ -1,6 +1,4 @@
-# VA-Calculator
-VA disability and compensation calculator
-
+# VA-Calculators
 <!DOCTYPE html>
 <html lang="en">
 <head>
