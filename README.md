@@ -1,7 +1,6 @@
 # VA-Calculator
 VA disability and compensation calculator
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,18 +26,20 @@ VA disability and compensation calculator
       text-align: center;
       color: #002868;
     }
-    label {
-      display: block;
-      margin-top: 10px;
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 10px;
     }
-    input[type="number"] {
-      width: 100%;
+    .input-group input[type="number"], .input-group input[type="text"] {
       padding: 8px;
       margin-top: 4px;
-      margin-bottom: 10px;
       border-radius: 4px;
       border: 1px solid #ccc;
       font-size: 16px;
+    }
+    .input-group input[type="text"] {
+      margin-top: 8px;
     }
     button {
       background-color: #d30000;
@@ -66,7 +67,7 @@ VA disability and compensation calculator
 <body>
   <div class="container">
     <h1>VA Disability Rating Calculator</h1>
-    <label>Enter each disability rating (0-100):</label>
+    <label>Enter each disability rating (0-100) and description:</label>
     <div id="inputs"></div>
     <button onclick="addInput()">+ Add Rating</button>
     <button onclick="calculateRating()">Calculate Combined Rating</button>
@@ -76,20 +77,35 @@ VA disability and compensation calculator
   <script>
     function addInput() {
       const container = document.getElementById('inputs');
-      const input = document.createElement('input');
-      input.type = 'number';
-      input.min = 0;
-      input.max = 100;
-      input.placeholder = 'Enter rating %';
-      container.appendChild(input);
+      const group = document.createElement('div');
+      group.className = 'input-group';
+
+      const ratingInput = document.createElement('input');
+      ratingInput.type = 'number';
+      ratingInput.min = 0;
+      ratingInput.max = 100;
+      ratingInput.placeholder = 'Enter rating %';
+
+      const descriptionInput = document.createElement('input');
+      descriptionInput.type = 'text';
+      descriptionInput.placeholder = 'Enter short description';
+
+      group.appendChild(ratingInput);
+      group.appendChild(descriptionInput);
+      container.appendChild(group);
     }
 
     function calculateRating() {
-      const inputs = document.querySelectorAll('#inputs input');
-      let ratings = Array.from(inputs)
-        .map(input => parseFloat(input.value))
-        .filter(val => !isNaN(val))
-        .sort((a, b) => b - a);
+      const groups = document.querySelectorAll('#inputs .input-group');
+      let ratings = [];
+
+      groups.forEach(group => {
+        const inputs = group.querySelectorAll('input');
+        const value = parseFloat(inputs[0].value);
+        if (!isNaN(value)) ratings.push(value);
+      });
+
+      ratings.sort((a, b) => b - a);
 
       if (ratings.length === 0) {
         document.getElementById('result').innerText = 'Please enter at least one valid rating.';
@@ -108,7 +124,25 @@ VA disability and compensation calculator
       let final = Math.round(combined / 10) * 10;
       final = Math.min(final, 100);
 
-      document.getElementById('result').innerText = `Combined VA Disability Rating: ${final}%`;
+      let pay = getPay(final);
+      document.getElementById('result').innerText = `Combined VA Disability Rating: ${final}%\nEstimated Monthly Compensation: $${pay.toLocaleString()}`;
+    }
+
+    function getPay(rating) {
+      // 2024 rates for veteran alone (no dependents)
+      const rates = {
+        10: 171.23,
+        20: 338.49,
+        30: 524.31,
+        40: 755.28,
+        50: 1075.16,
+        60: 1361.88,
+        70: 1716.28,
+        80: 1995.01,
+        90: 2241.91,
+        100: 3737.85
+      };
+      return rates[rating] || 0;
     }
 
     // Initialize with 5 input fields
